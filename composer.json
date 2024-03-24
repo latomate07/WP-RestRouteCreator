@@ -1,5 +1,6 @@
 {
     "name": "latomate07/wp-rest-route-creator",
+    "license": "MIT",
     "autoload": {
         "psr-4": {
             "Latomate07\\WpRestRouteCreator\\": "src/",
@@ -9,7 +10,7 @@
     "authors": [
         {
             "name": "Tahirou Magagi",
-            "email": "65642962+latomate07@users.noreply.github.com"
+            "email": "lmtahirou@gmail.com"
         }
     ],
     "require-dev": {
