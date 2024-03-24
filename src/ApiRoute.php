@@ -3,6 +3,7 @@
 namespace Latomate07\WpRestRouteCreator;
 
 use WP_REST_Request;
+use WP_REST_Response;
 use Latomate07\WpRestRouteCreator\RouteDefinition;
 
 /**
@@ -42,10 +43,12 @@ class ApiRoute
             register_rest_route('custom/v2', $endpointRegex, [
                 'methods' => $method,
                 'callback' => function (WP_REST_Request $request) use ($callback) {
-                    foreach (self::$middlewares as $middleware) {
-                        $request = $middleware($request);
+                    $request = self::applyMiddleware($request);
+    
+                    if ($request instanceof WP_REST_Response) {
+                        return $request;
                     }
-
+    
                     return $callback($request);
                 },
                 'permission_callback' => '__return_true',
@@ -74,15 +77,43 @@ class ApiRoute
     public static function addMiddleware(callable|object $middleware): void
     {
         if (!empty(self::$middlewaresGroup)) {
+            if (is_object($middleware) && method_exists($middleware, 'handle')) {
+                $middleware = [$middleware, 'handle'];
+            }
+
             self::$middlewaresGroup[] = $middleware;
         } else {
             if (is_object($middleware) && method_exists($middleware, 'handle')) {
                 $middleware = [$middleware, 'handle'];
             }
-    
+
             self::$middlewares[] = $middleware;
         }
     }
+
+    /**
+     * Apply middleware to the given request.
+     *
+     * This method iterates through the registered middleware and applies them to the request object.
+     * 
+     * @param WP_REST_Request $request The request object to apply middleware to.
+     *
+     * @return WP_REST_Request|WP_REST_Response The updated request object after applying middleware
+     */
+    private static function applyMiddleware(WP_REST_Request $request): WP_REST_Request|WP_REST_Response
+    {
+        foreach (self::$middlewares as $middleware) {
+            $result = $middleware($request);
+    
+            if ($result instanceof WP_REST_Response) {
+                return $result;
+            }
+    
+            $request = $result;
+        }
+    
+        return $request;
+    }    
 
     /**
      * Creates a group of routes with specific middlewares.
@@ -114,7 +145,7 @@ class ApiRoute
         if ($callback instanceof Closure) {
             return new RouteDefinition($endpoint, 'GET', $callback);
         }
-    
+
         return new RouteDefinition($endpoint, 'GET', function (WP_REST_Request $request) use ($callback) {
             return call_user_func($callback, $request);
         });
@@ -132,7 +163,7 @@ class ApiRoute
         if ($callback instanceof Closure) {
             return new RouteDefinition($endpoint, 'POST', $callback);
         }
-    
+
         return new RouteDefinition($endpoint, 'POST', function (WP_REST_Request $request) use ($callback) {
             return call_user_func($callback, $request);
         });
@@ -150,7 +181,7 @@ class ApiRoute
         if ($callback instanceof Closure) {
             return new RouteDefinition($endpoint, 'PUT', $callback);
         }
-    
+
         return new RouteDefinition($endpoint, 'PUT', function (WP_REST_Request $request) use ($callback) {
             return call_user_func($callback, $request);
         });
@@ -168,7 +199,7 @@ class ApiRoute
         if ($callback instanceof Closure) {
             return new RouteDefinition($endpoint, 'PATCH', $callback);
         }
-    
+
         return new RouteDefinition($endpoint, 'PATCH', function (WP_REST_Request $request) use ($callback) {
             return call_user_func($callback, $request);
         });
@@ -186,7 +217,7 @@ class ApiRoute
         if ($callback instanceof Closure) {
             return new RouteDefinition($endpoint, 'DELETE', $callback);
         }
-    
+
         return new RouteDefinition($endpoint, 'DELETE', function (WP_REST_Request $request) use ($callback) {
             return call_user_func($callback, $request);
         });

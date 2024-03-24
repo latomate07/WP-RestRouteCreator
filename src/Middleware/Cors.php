@@ -3,6 +3,7 @@
 namespace Latomate07\WpRestRouteCreator\Middleware;
 
 use WP_REST_Request;
+use WP_REST_Response;
 
 class Cors
 {
