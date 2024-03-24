@@ -1,0 +1,23 @@
+{
+    "name": "latomate07/wp-rest-route-creator",
+    "autoload": {
+        "psr-4": {
+            "Latomate07\\WpRestRouteCreator\\": "src/",
+            "Latomate07\\WpRestRouteCreator\\Tests\\": "tests/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Tahirou Magagi",
+            "email": "65642962+latomate07@users.noreply.github.com"
+        }
+    ],
+    "require-dev": {
+        "pestphp/pest": "^2.34"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}
