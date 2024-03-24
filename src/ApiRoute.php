@@ -69,13 +69,17 @@ class ApiRoute
     /**
      * Adds a global middleware to be executed before the route callback.
      *
-     * @param callable $middleware The middleware function to be added.
+     * @param callable|object $middleware The middleware function to be added.
      */
-    public static function addMiddleware(callable $middleware)
+    public static function addMiddleware(callable|object $middleware): void
     {
         if (!empty(self::$middlewaresGroup)) {
             self::$middlewaresGroup[] = $middleware;
         } else {
+            if (is_object($middleware) && method_exists($middleware, 'handle')) {
+                $middleware = [$middleware, 'handle'];
+            }
+    
             self::$middlewares[] = $middleware;
         }
     }
