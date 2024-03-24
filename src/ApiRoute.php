@@ -107,7 +107,13 @@ class ApiRoute
     public static function get($endpoint, $callback)
     {
         self::register('GET', $endpoint, $callback);
-        return new RouteDefinition($endpoint, 'GET', $callback);
+        if ($callback instanceof Closure) {
+            return new RouteDefinition($endpoint, 'GET', $callback);
+        }
+    
+        return new RouteDefinition($endpoint, 'GET', function (WP_REST_Request $request) use ($callback) {
+            return call_user_func($callback, $request);
+        });
     }
 
     /**
@@ -119,7 +125,13 @@ class ApiRoute
     public static function post($endpoint, $callback)
     {
         self::register('POST', $endpoint, $callback);
-        return new RouteDefinition($endpoint, 'POST', $callback);
+        if ($callback instanceof Closure) {
+            return new RouteDefinition($endpoint, 'POST', $callback);
+        }
+    
+        return new RouteDefinition($endpoint, 'POST', function (WP_REST_Request $request) use ($callback) {
+            return call_user_func($callback, $request);
+        });
     }
 
     /**
@@ -131,7 +143,13 @@ class ApiRoute
     public static function put($endpoint, $callback)
     {
         self::register('PUT', $endpoint, $callback);
-        return new RouteDefinition($endpoint, 'PUT', $callback);
+        if ($callback instanceof Closure) {
+            return new RouteDefinition($endpoint, 'PUT', $callback);
+        }
+    
+        return new RouteDefinition($endpoint, 'PUT', function (WP_REST_Request $request) use ($callback) {
+            return call_user_func($callback, $request);
+        });
     }
 
     /**
@@ -143,7 +161,13 @@ class ApiRoute
     public static function patch($endpoint, $callback)
     {
         self::register('PATCH', $endpoint, $callback);
-        return new RouteDefinition($endpoint, 'PATCH', $callback);
+        if ($callback instanceof Closure) {
+            return new RouteDefinition($endpoint, 'PATCH', $callback);
+        }
+    
+        return new RouteDefinition($endpoint, 'PATCH', function (WP_REST_Request $request) use ($callback) {
+            return call_user_func($callback, $request);
+        });
     }
 
     /**
@@ -155,6 +179,12 @@ class ApiRoute
     public static function delete($endpoint, $callback)
     {
         self::register('DELETE', $endpoint, $callback);
-        return new RouteDefinition($endpoint, 'DELETE', $callback);
+        if ($callback instanceof Closure) {
+            return new RouteDefinition($endpoint, 'DELETE', $callback);
+        }
+    
+        return new RouteDefinition($endpoint, 'DELETE', function (WP_REST_Request $request) use ($callback) {
+            return call_user_func($callback, $request);
+        });
     }
 }
